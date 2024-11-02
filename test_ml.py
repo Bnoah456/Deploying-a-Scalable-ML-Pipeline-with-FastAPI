@@ -1,28 +1,44 @@
 import pytest
-# TODO: add necessary import
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+from ml.data import process_data
+from ml.model import train_model, compute_model_metrics, inference
 
-# TODO: implement the first test. Change the function name and input as needed
-def test_one():
-    """
-    # add description for the first test
-    """
-    # Your code here
-    pass
+# Load data for testing
+import pandas as pd
+data = pd.read_csv('data/census.csv')
+cat_features = ["workclass", "education", "marital-status", "occupation",
+                "relationship", "race", "sex", "native-country"]
+X, y, encoder, lb = process_data(data, categorical_features=cat_features, label="salary", training=True)
 
+# Implement the first test
+def test_train_model():
+    """
+    Test if the train_model function returns a RandomForestClassifier.
+    """
+    model = train_model(X, y)
+    assert isinstance(model, RandomForestClassifier), "Model is not a RandomForestClassifier"
 
-# TODO: implement the second test. Change the function name and input as needed
-def test_two():
+# Implement the second test
+def test_inference():
     """
-    # add description for the second test
+    Test if the inference function returns the expected type of result.
     """
-    # Your code here
-    pass
+    model = train_model(X, y)
+    preds = inference(model, X)
+    assert isinstance(preds, np.ndarray), "Inference does not return np.ndarray"
 
-
-# TODO: implement the third test. Change the function name and input as needed
-def test_three():
+# Implement the third test
+def test_compute_model_metrics():
     """
-    # add description for the third test
+    Test if the compute_model_metrics function returns expected values.
     """
-    # Your code here
-    pass
+    model = train_model(X, y)
+    preds = inference(model, X)
+    precision, recall, fbeta = compute_model_metrics(y, preds)
+    assert isinstance(precision, float), "Precision is not a float"
+    assert isinstance(recall, float), "Recall is not a float"
+    assert isinstance(fbeta, float), "Fbeta is not a float"
+    assert 0 <= precision <= 1, "Precision out of bounds"
+    assert 0 <= recall <= 1, "Recall out of bounds"
+    assert 0 <= fbeta <= 1, "Fbeta out of bounds"
